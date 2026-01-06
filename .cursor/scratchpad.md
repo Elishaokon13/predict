@@ -566,7 +566,7 @@
 - [x] Task 1.3: Configure Project Structure
 
 ### Phase 2: Design System & Base Components
-- [ ] Task 2.1: Design Token System
+- [x] Task 2.1: Design Token System
 - [ ] Task 2.2: Base Card Component
 - [ ] Task 2.3: Typography Components
 - [ ] Task 2.4: Button Components
