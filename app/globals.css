@@ -34,13 +34,19 @@
   
   /* Glassmorphism utility */
   .glass {
-    @apply bg-background-elevated/80 backdrop-blur-sm;
+    background-color: rgba(42, 42, 42, 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     border: 1px solid rgba(42, 42, 42, 0.5);
   }
   
   /* Gradient text */
   .gradient-text {
-    @apply bg-gradient-to-r from-accent to-accent-success bg-clip-text text-transparent;
+    background: linear-gradient(to right, #3b82f6, #10b981);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
   
   /* Shimmer animation for skeleton loaders */
