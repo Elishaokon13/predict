@@ -69,14 +69,14 @@ export default function Home() {
           </Headline>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((item) => (
-              <Card key={item} variant="default" hover>
-                <div className="relative h-48 rounded-t-lg bg-gradient-to-br from-background-tertiary to-background-secondary mb-4 overflow-hidden">
+              <Card key={item} variant="default" hover padding="none" className="overflow-hidden">
+                {/* Image Section */}
+                <div className="relative h-48 w-full bg-gradient-to-br from-accent/20 via-accent-success/20 to-accent/20 overflow-hidden">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-4xl">💰</div>
+                    <div className="text-6xl opacity-50">📈</div>
                   </div>
-                </div>
-                <CardHeader className="px-4 pb-2">
-                  <div className="flex items-center gap-2 mb-2">
+                  {/* Badges overlay */}
+                  <div className="absolute top-3 left-3 flex gap-2">
                     <Badge variant="top-gainer" size="sm">
                       Top Gainer
                     </Badge>
@@ -84,35 +84,41 @@ export default function Home() {
                       Consistent
                     </Badge>
                   </div>
-                  <CardTitle className="text-xl mb-2">
-                    Trader #{item} - Elite Performer
-                  </CardTitle>
-                  <CardDescription>
-                    Consistent returns with low risk profile
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-4 pb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <div>
-                      <Meta size="xs" variant="muted">ROI</Meta>
-                      <Data variant="profit" size="base" weight="semibold">
+                </div>
+                
+                {/* Content Section */}
+                <div className="p-4 space-y-3">
+                  <div>
+                    <CardTitle className="text-lg font-semibold mb-1">
+                      Trader #{item} - Elite Performer
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                      Consistent returns with low risk profile
+                    </CardDescription>
+                  </div>
+                  
+                  {/* Metrics */}
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <div className="text-center">
+                      <Meta size="xs" variant="muted" className="block mb-1">ROI</Meta>
+                      <Data variant="profit" size="sm" weight="semibold">
                         +{15 + item * 2}%
                       </Data>
                     </div>
-                    <div>
-                      <Meta size="xs" variant="muted">Win Rate</Meta>
-                      <Data size="base" weight="semibold">
+                    <div className="text-center">
+                      <Meta size="xs" variant="muted" className="block mb-1">Win Rate</Meta>
+                      <Data size="sm" weight="semibold">
                         {70 + item * 2}%
                       </Data>
                     </div>
-                    <div>
-                      <Meta size="xs" variant="muted">Copied</Meta>
-                      <Data size="base" weight="semibold">
+                    <div className="text-center">
+                      <Meta size="xs" variant="muted" className="block mb-1">Copied</Meta>
+                      <Data size="sm" weight="semibold">
                         {120 + item * 10}
                       </Data>
                     </div>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
