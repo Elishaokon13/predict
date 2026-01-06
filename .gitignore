@@ -1,5 +1,6 @@
 run.sh
 auto-commit.sh
+predict.txt
 
 node_modules/
 .env
