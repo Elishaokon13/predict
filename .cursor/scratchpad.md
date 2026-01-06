@@ -685,10 +685,21 @@ _This section will be populated by the Executor during implementation._
 
 _This section will be populated during implementation with reusable knowledge, fixes, and corrections._
 
-**Key Learnings** (to be added):
-- Library versions and configurations
-- Common pitfalls and solutions
-- Design decisions and rationale
+**Key Learnings**:
+- **Tailwind CSS v4**: Requires `@tailwindcss/postcss` package instead of using `tailwindcss` directly as PostCSS plugin. The PostCSS config must use `'@tailwindcss/postcss': {}` instead of `tailwindcss: {}`.
+- **Next.js 16.1.1**: Latest version with App Router. TypeScript strict mode is enabled by default in tsconfig.json.
+- **Package Versions Installed**:
+  - next: ^16.1.1
+  - react: ^19.2.3
+  - react-dom: ^19.2.3
+  - typescript: ^5.9.3
+  - tailwindcss: ^4.1.18
+  - @tailwindcss/postcss: ^4.1.18
+  - recharts: latest
+  - framer-motion: latest
+  - @tanstack/react-query: latest
+  - zustand: latest
+- **Project Structure**: Following Next.js App Router conventions with organized component, hook, and utility folders.
 
 ---
 
