@@ -19,7 +19,8 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    background-color: #0a0a0a;
+    color: #ededed;
     font-family: var(--font-inter);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
