@@ -44,5 +44,26 @@
   .gradient-text {
     @apply bg-gradient-to-r from-accent to-accent-success bg-clip-text text-transparent;
   }
+  
+  /* Shimmer animation for skeleton loaders */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+  
+  .animate-\[shimmer_2s_infinite\] {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(
+      to right,
+      rgba(42, 42, 42, 0.4) 0%,
+      rgba(42, 42, 42, 0.6) 50%,
+      rgba(42, 42, 42, 0.4) 100%
+    );
+    background-size: 1000px 100%;
+  }
 }
 
