@@ -75,7 +75,7 @@ export default function Home() {
                     <div className="text-4xl">💰</div>
                   </div>
                 </div>
-                <CardHeader padding="none" className="px-4 pb-2">
+                <CardHeader className="px-4 pb-2">
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant="top-gainer" size="sm">
                       Top Gainer
