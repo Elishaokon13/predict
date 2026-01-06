@@ -707,6 +707,8 @@ _This section will be populated during implementation with reusable knowledge, f
   - @tanstack/react-query: latest
   - zustand: latest
 - **Project Structure**: Following Next.js App Router conventions with organized component, hook, and utility folders.
+- **Font Loading**: Next.js has built-in font optimization via `next/font/google`. No need for @next/font package - use `next/font/google` directly.
+- **Design Tokens**: Comprehensive design token system created with dark mode colors, typography scale, spacing, border radius, shadows, and animations. All tokens documented in `lib/design-tokens.md`.
 
 ---
 
