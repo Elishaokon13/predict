@@ -4,80 +4,121 @@ import Card, {
   CardDescription,
   CardContent,
 } from "@/components/ui/Card";
+import { Headline, Meta, Data } from "@/components/ui/Typography";
+import Badge from "@/components/ui/Badge";
 
 export default function Home() {
   return (
-    <main className="min-h-screen p-8 md:p-24">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Kalshi Copy Trading Dashboard
-          </h1>
-          <p className="text-foreground-secondary">
-            Dashboard coming soon...
-          </p>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        {/* Featured Trader Section (Hashnode-inspired pinned section) */}
+        <div className="mb-12">
+          <Card variant="elevated" hover className="overflow-hidden">
+            <div className="relative">
+              <div className="absolute top-4 left-4 z-10">
+                <Badge variant="elite" size="sm">
+                  FEATURED
+                </Badge>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6 p-6">
+                <div className="relative h-64 md:h-auto rounded-lg bg-gradient-to-br from-accent/20 to-accent-success/20 overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-6xl">📈</div>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-center space-y-4">
+                  <Headline size="lg" weight="bold">
+                    Top Performing Trader This Week
+                  </Headline>
+                  <Meta size="base" variant="secondary">
+                    Discover the strategies and insights from our most successful
+                    trader. With an impressive win rate and consistent returns,
+                    this trader has proven their expertise in navigating
+                    prediction markets.
+                  </Meta>
+                  <div className="flex items-center gap-6 pt-4">
+                    <div>
+                      <Meta size="xs" variant="muted">ROI (7d)</Meta>
+                      <Data variant="profit" size="lg" weight="bold">
+                        +24.5%
+                      </Data>
+                    </div>
+                    <div>
+                      <Meta size="xs" variant="muted">Win Rate</Meta>
+                      <Data variant="profit" size="lg" weight="bold">
+                        78%
+                      </Data>
+                    </div>
+                    <div>
+                      <Meta size="xs" variant="muted">Volume</Meta>
+                      <Data size="lg" weight="bold">
+                        $125K
+                      </Data>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
 
-        {/* Card Component Demo */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card variant="default" hover>
-            <CardHeader>
-              <CardTitle>Default Card</CardTitle>
-              <CardDescription>
-                Standard card with hover effect
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-foreground-secondary">
-                This is a default card variant with hover animation.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card variant="elevated">
-            <CardHeader>
-              <CardTitle>Elevated Card</CardTitle>
-              <CardDescription>
-                Card with elevated shadow
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-foreground-secondary">
-                This card has a stronger shadow for emphasis.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card variant="glass">
-            <CardHeader>
-              <CardTitle>Glass Card</CardTitle>
-              <CardDescription>
-                Glassmorphism effect
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-foreground-secondary">
-                This card uses glassmorphism with backdrop blur.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card variant="outlined" hover>
-            <CardHeader>
-              <CardTitle>Outlined Card</CardTitle>
-              <CardDescription>
-                Card with prominent border
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-foreground-secondary">
-                This card has a thicker border for definition.
-              </p>
-            </CardContent>
-          </Card>
+        {/* Top Traders Grid (Hashnode-inspired article grid) */}
+        <div className="mb-12">
+          <Headline size="md" weight="semibold" className="mb-6">
+            Top Gainers
+          </Headline>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((item) => (
+              <Card key={item} variant="default" hover>
+                <div className="relative h-48 rounded-t-lg bg-gradient-to-br from-background-tertiary to-background-secondary mb-4 overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-4xl">💰</div>
+                  </div>
+                </div>
+                <CardHeader padding="none" className="px-4 pb-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="top-gainer" size="sm">
+                      Top Gainer
+                    </Badge>
+                    <Badge variant="consistent" size="sm">
+                      Consistent
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-xl mb-2">
+                    Trader #{item} - Elite Performer
+                  </CardTitle>
+                  <CardDescription>
+                    Consistent returns with low risk profile
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="px-4 pb-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <div>
+                      <Meta size="xs" variant="muted">ROI</Meta>
+                      <Data variant="profit" size="base" weight="semibold">
+                        +{15 + item * 2}%
+                      </Data>
+                    </div>
+                    <div>
+                      <Meta size="xs" variant="muted">Win Rate</Meta>
+                      <Data size="base" weight="semibold">
+                        {70 + item * 2}%
+                      </Data>
+                    </div>
+                    <div>
+                      <Meta size="xs" variant="muted">Copied</Meta>
+                      <Data size="base" weight="semibold">
+                        {120 + item * 10}
+                      </Data>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 
