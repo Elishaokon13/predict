@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { Blocks, BarChart3, Rabbit, Container, Banknote, SquareArrowOutUpRight, Settings2, LogOut } from 'lucide-react'
 
 export type NavigationItem = 'dashboard' | 'analytics' | 'top-traders' | 'markets' | 'funds'
@@ -10,9 +10,34 @@ interface SidebarProps {
   onNavigate?: (view: NavigationItem) => void
 }
 
-export function Sidebar({ activeView = 'dashboard', onNavigate }: SidebarProps) {
+const navigationRoutes: Record<NavigationItem, string> = {
+  'dashboard': '/',
+  'analytics': '/analytics',
+  'top-traders': '/toptraders',
+  'markets': '/markets',
+  'funds': '/funds',
+}
+
+export function Sidebar({ activeView, onNavigate }: SidebarProps) {
+  const pathname = usePathname()
+  const router = useRouter()
+  
+  // Determine active view from pathname if not provided
+  const currentView: NavigationItem = activeView || 
+    (pathname === '/' ? 'dashboard' :
+     pathname === '/toptraders' ? 'top-traders' :
+     pathname === '/analytics' ? 'analytics' :
+     pathname === '/markets' ? 'markets' :
+     pathname === '/funds' ? 'funds' :
+     'dashboard')
+
   const handleNavClick = (view: NavigationItem) => {
-    onNavigate?.(view)
+    if (onNavigate) {
+      onNavigate(view)
+    } else {
+      // Use Next.js routing
+      router.push(navigationRoutes[view])
+    }
   }
 
   return (
@@ -20,7 +45,7 @@ export function Sidebar({ activeView = 'dashboard', onNavigate }: SidebarProps) 
       <nav className="flex flex-col gap-8">
         <div 
           className={`flex items-center gap-4 cursor-pointer transition-colors ${
-            activeView === 'dashboard' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
+            currentView === 'dashboard' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
           }`}
           onClick={() => handleNavClick('dashboard')}
         >
@@ -29,7 +54,7 @@ export function Sidebar({ activeView = 'dashboard', onNavigate }: SidebarProps) 
         </div>
         <div 
           className={`flex items-center gap-4 cursor-pointer transition-colors ${
-            activeView === 'analytics' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
+            currentView === 'analytics' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
           }`}
           onClick={() => handleNavClick('analytics')}
         >
@@ -38,7 +63,7 @@ export function Sidebar({ activeView = 'dashboard', onNavigate }: SidebarProps) 
         </div>
         <div 
           className={`flex items-center gap-4 cursor-pointer transition-colors ${
-            activeView === 'top-traders' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
+            currentView === 'top-traders' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
           }`}
           onClick={() => handleNavClick('top-traders')}
         >
@@ -47,7 +72,7 @@ export function Sidebar({ activeView = 'dashboard', onNavigate }: SidebarProps) 
         </div>
         <div 
           className={`flex items-center gap-4 cursor-pointer transition-colors ${
-            activeView === 'markets' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
+            currentView === 'markets' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
           }`}
           onClick={() => handleNavClick('markets')}
         >
@@ -56,7 +81,7 @@ export function Sidebar({ activeView = 'dashboard', onNavigate }: SidebarProps) 
         </div>
         <div 
           className={`flex items-center gap-4 cursor-pointer transition-colors ${
-            activeView === 'funds' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
+            currentView === 'funds' ? 'text-[#E7E7E7]' : 'text-[#919191] hover:text-[#E7E7E7]'
           }`}
           onClick={() => handleNavClick('funds')}
         >

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { TopTrader, CopyTradingConfig } from '@/lib/types'
 import { generateMockTopTraders } from '@/lib/mock-data'
 import { Button } from '@/components/ui/button'
@@ -8,17 +8,114 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { CopyTraderModal } from '@/components/copy-trader-modal'
 import { useCopyTrading } from '@/lib/copy-trading-context'
 
+const TRADERS_PER_PAGE = 20
+
 export function TopTraders() {
   const { addCopiedTrader, copiedTraders } = useCopyTrading()
-  const [topTraders] = useState<TopTrader[]>(generateMockTopTraders(20))
+  const [allTraders, setAllTraders] = useState<TopTrader[]>([])
+  const [displayedTraders, setDisplayedTraders] = useState<TopTrader[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedTrader, setSelectedTrader] = useState<TopTrader | null>(null)
+  const observerTarget = useRef<HTMLDivElement>(null)
+
+  // Fetch top traders from Polymarket API
+  useEffect(() => {
+    async function fetchTopTraders() {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch 100 traders
+        const response = await fetch('/api/polymarket/top-traders?limit=100')
+        const data = await response.json()
+        
+        if (data.error) {
+          throw new Error(data.message || 'Failed to fetch top traders')
+        }
+        
+        if (data.traders && data.traders.length > 0) {
+          // Sort by PnL descending (most profitable first) as fallback
+          const sorted = [...data.traders].sort((a, b) => {
+            // Calculate PnL from ROI or use rank
+            const pnlA = a.roi30d || 0
+            const pnlB = b.roi30d || 0
+            return pnlB - pnlA
+          })
+          setAllTraders(sorted)
+          // Display first 20
+          setDisplayedTraders(sorted.slice(0, TRADERS_PER_PAGE))
+        } else {
+          // Fallback to mock data if API returns empty
+          console.warn('No traders from API, using mock data')
+          const mockTraders = generateMockTopTraders(100)
+          setAllTraders(mockTraders)
+          setDisplayedTraders(mockTraders.slice(0, TRADERS_PER_PAGE))
+        }
+      } catch (err) {
+        console.error('Error fetching top traders:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load traders')
+        // Fallback to mock data on error
+        const mockTraders = generateMockTopTraders(100)
+        setAllTraders(mockTraders)
+        setDisplayedTraders(mockTraders.slice(0, TRADERS_PER_PAGE))
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTopTraders()
+  }, [])
+
+  // Load more traders on scroll
+  const loadMore = useCallback(() => {
+    if (loadingMore || displayedTraders.length >= allTraders.length) return
+    
+    setLoadingMore(true)
+    
+    // Simulate slight delay for better UX
+    setTimeout(() => {
+      const nextBatch = allTraders.slice(
+        displayedTraders.length,
+        displayedTraders.length + TRADERS_PER_PAGE
+      )
+      setDisplayedTraders(prev => [...prev, ...nextBatch])
+      setLoadingMore(false)
+    }, 300)
+  }, [allTraders, displayedTraders.length, loadingMore])
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loadingMore && displayedTraders.length < allTraders.length) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    const currentTarget = observerTarget.current
+    if (currentTarget) {
+      observer.observe(currentTarget)
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget)
+      }
+    }
+  }, [loadMore, loadingMore, displayedTraders.length, allTraders.length])
 
   // Mark traders as copied if they're in the copiedTraders list
-  const tradersWithCopyStatus = topTraders.map(trader => ({
-    ...trader,
-    isCopied: copiedTraders.some(ct => ct.id === trader.id)
-  }))
+  const tradersWithCopyStatus = displayedTraders.length > 0 
+    ? displayedTraders.map(trader => ({
+        ...trader,
+        isCopied: copiedTraders.some(ct => ct.id === trader.id)
+      }))
+    : []
 
   const handleCopyClick = (trader: TopTrader) => {
     setSelectedTrader(trader)
@@ -45,11 +142,28 @@ export function TopTraders() {
     return 'text-[#F87171]' // High risk - red
   }
 
+  if (loading) {
+    return (
+      <div className="bg-[#0D0D0D] rounded-2xl p-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-medium text-white mb-2">Top Traders</h2>
+          <p className="text-sm text-gray-400">Loading top traders from Polymarket...</p>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-gray-400">Loading...</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-[#0D0D0D] rounded-2xl p-6">
       <div className="mb-6">
         <h2 className="text-xl font-medium text-white mb-2">Top Traders</h2>
-        <p className="text-sm text-gray-400">Discover the best performing Kalshi traders to copy</p>
+        <p className="text-sm text-gray-400">
+          Discover the best performing Polymarket traders to copy
+          {error && <span className="text-yellow-500 ml-2">(Using fallback data)</span>}
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -131,6 +245,26 @@ export function TopTraders() {
             </div>
           </div>
         ))}
+        
+        {/* Infinite Scroll Trigger */}
+        {displayedTraders.length < allTraders.length && (
+          <div ref={observerTarget} className="flex items-center justify-center py-8">
+            {loadingMore ? (
+              <div className="text-gray-400 text-sm">Loading more traders...</div>
+            ) : (
+              <div className="text-gray-500 text-xs">Scroll for more</div>
+            )}
+          </div>
+        )}
+        
+        {/* End of list indicator */}
+        {displayedTraders.length >= allTraders.length && allTraders.length > 0 && (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-gray-500 text-sm">
+              Showing all {allTraders.length} traders
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Copy Trader Modal */}
