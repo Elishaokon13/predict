@@ -2,20 +2,11 @@
 
 import { ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer } from "recharts"
-import { CopiedTrader } from '@/lib/types'
-import { mockCopiedTraders } from '@/lib/mock-data'
+import { useCopyTrading } from '@/lib/copy-trading-context'
 
-interface CopiedTradersTableProps {
-  traders?: CopiedTrader[]
-  onTraderSelect?: (traderId: string) => void
-  selectedTraderId?: string | null
-}
-
-export function CopiedTradersTable({ 
-  traders = mockCopiedTraders, 
-  onTraderSelect,
-  selectedTraderId 
-}: CopiedTradersTableProps) {
+export function CopiedTradersTable() {
+  const { copiedTraders, selectedTraderId, setSelectedTrader } = useCopyTrading()
+  const traders = copiedTraders
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -55,7 +46,7 @@ export function CopiedTradersTable({
               className={`group transition-colors border-b border-transparent last:border-0 cursor-pointer ${
                 selectedTraderId === trader.id ? 'bg-[#1A1A1A]' : 'hover:bg-[#1A1A1A]'
               }`}
-              onClick={() => onTraderSelect?.(trader.id)}
+              onClick={() => setSelectedTrader(trader.id)}
             >
               <td className="py-4 pl-2 rounded-l-xl">
                 <div className="flex items-center gap-3">

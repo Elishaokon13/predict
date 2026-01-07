@@ -1,14 +1,11 @@
 "use client"
 
 import { Wallet } from 'lucide-react'
-import { PortfolioMetrics } from '@/lib/types'
-import { mockPortfolioMetrics } from '@/lib/mock-data'
+import { useCopyTrading } from '@/lib/copy-trading-context'
 
-interface DashboardMetricsProps {
-  metrics?: PortfolioMetrics
-}
-
-export function DashboardMetrics({ metrics = mockPortfolioMetrics }: DashboardMetricsProps) {
+export function DashboardMetrics() {
+  const { portfolioMetrics } = useCopyTrading()
+  const metrics = portfolioMetrics
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',

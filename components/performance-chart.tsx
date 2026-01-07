@@ -5,18 +5,14 @@ import { Calendar, Download } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts"
 import { PerformanceDataPoint, TimeRange } from '@/lib/types'
 import { generateMockPerformanceData } from '@/lib/mock-data'
-import { mockPortfolioMetrics } from '@/lib/mock-data'
+import { useCopyTrading } from '@/lib/copy-trading-context'
 
-interface PerformanceChartProps {
-  selectedTraderId?: string | null // null = portfolio aggregate
-  initialValue?: number
-}
-
-export function PerformanceChart({ selectedTraderId = null, initialValue }: PerformanceChartProps) {
+export function PerformanceChart() {
+  const { selectedTraderId, portfolioMetrics } = useCopyTrading()
   const [timeRange, setTimeRange] = useState<TimeRange>('3M')
   
-  // Use portfolio value as initial value if not provided
-  const chartInitialValue = initialValue || mockPortfolioMetrics.totalPortfolioValue
+  // Use portfolio value as initial value
+  const chartInitialValue = portfolioMetrics.totalPortfolioValue
   
   // Generate performance data based on time range
   const data: PerformanceDataPoint[] = generateMockPerformanceData(timeRange, chartInitialValue)
