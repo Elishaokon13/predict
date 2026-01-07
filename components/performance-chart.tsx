@@ -1,59 +1,74 @@
 "use client"
 
+import { useState } from 'react'
 import { Calendar, Download } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts"
+import { PerformanceDataPoint, TimeRange } from '@/lib/types'
+import { generateMockPerformanceData } from '@/lib/mock-data'
+import { mockPortfolioMetrics } from '@/lib/mock-data'
 
-const data = [
-  { date: "Jan 1", price: 355 }, { date: "Jan 8", price: 358 }, { date: "Jan 15", price: 345 },
-  { date: "Jan 22", price: 365 }, { date: "Jan 29", price: 355 }, { date: "Feb 5", price: 360 },
-  { date: "Feb 12", price: 345 }, { date: "Feb 19", price: 348 }, { date: "Feb 26", price: 320 },
-  { date: "Mar 5", price: 285 }, { date: "Mar 12", price: 305 }, { date: "Mar 19", price: 325 },
-  { date: "Mar 26", price: 328 }, { date: "Apr 2", price: 318 }, { date: "Apr 9", price: 325 },
-  { date: "Apr 16", price: 315 }, { date: "Apr 23", price: 320 }, { date: "Apr 30", price: 345 },
-  { date: "May 7", price: 335 }, { date: "May 14", price: 330 }, { date: "May 21", price: 320 },
-  { date: "May 28", price: 300 }, { date: "Jun 4", price: 315 }, { date: "Jun 11", price: 310 },
-  { date: "Jun 18", price: 318 }, { date: "Jun 25", price: 312 }, { date: "Jul 2", price: 325 },
-  { date: "Jul 9", price: 330 }, { date: "Jul 16", price: 332 }, { date: "Jul 23", price: 305 },
-  { date: "Jul 30", price: 325 }, { date: "Aug 6", price: 315 }, { date: "Aug 13", price: 305 },
-  { date: "Aug 20", price: 312 }, { date: "Aug 27", price: 335 }, { date: "Sep 3", price: 340 },
-  { date: "Sep 10", price: 338 }, { date: "Sep 17", price: 330 }, { date: "Sep 24", price: 335 },
-  { date: "Oct 1", price: 320 }, { date: "Oct 8", price: 340 }, { date: "Oct 15", price: 350 },
-  { date: "Oct 22", price: 345 }, { date: "Oct 29", price: 330 }, { date: "Nov 5", price: 335 },
-  { date: "Nov 12", price: 348 }, { date: "Nov 19", price: 348 }, { date: "Nov 26", price: 380 },
-  { date: "Dec 3", price: 410 }, { date: "Dec 10", price: 420 }, { date: "Dec 17", price: 428 },
-  { date: "Dec 24", price: 415 }, { date: "Dec 31", price: 425 }, { date: "Jan 7", price: 445 },
-  { date: "Jan 14", price: 420 }, { date: "Jan 21", price: 435 }, { date: "Jan 28", price: 450 },
-  { date: "Feb 4", price: 430 }, { date: "Feb 11", price: 455 }, { date: "Feb 18", price: 435 },
-  { date: "Feb 25", price: 440 }, { date: "Mar 4", price: 430 }, { date: "Mar 11", price: 410 },
-  { date: "Mar 18", price: 425 }, { date: "Mar 25", price: 435 }, { date: "Apr 1", price: 428 },
-  { date: "Apr 8", price: 440 }, { date: "Apr 15", price: 450 }, { date: "Apr 22", price: 430 },
-  { date: "Apr 29", price: 460 }, { date: "May 6", price: 460 }, { date: "May 13", price: 440 },
-  { date: "May 20", price: 465 }, { date: "May 27", price: 450 }, { date: "Jun 3", price: 460 },
-  { date: "Jun 10", price: 435 }, { date: "Jun 17", price: 445 }, { date: "Jun 24", price: 430 },
-  { date: "Jul 1", price: 400 }, { date: "Jul 8", price: 405 }, { date: "Jul 15", price: 400 }
-]
+interface PerformanceChartProps {
+  selectedTraderId?: string | null // null = portfolio aggregate
+  initialValue?: number
+}
 
-export function PerformanceChart() {
+export function PerformanceChart({ selectedTraderId = null, initialValue }: PerformanceChartProps) {
+  const [timeRange, setTimeRange] = useState<TimeRange>('3M')
+  
+  // Use portfolio value as initial value if not provided
+  const chartInitialValue = initialValue || mockPortfolioMetrics.totalPortfolioValue
+  
+  // Generate performance data based on time range
+  const data: PerformanceDataPoint[] = generateMockPerformanceData(timeRange, chartInitialValue)
+  
+  // Calculate Y-axis domain dynamically from data
+  const values = data.map(d => d.value)
+  const minValue = Math.min(...values)
+  const maxValue = Math.max(...values)
+  const padding = (maxValue - minValue) * 0.1
+  const yAxisMin = Math.max(0, minValue - padding)
+  const yAxisMax = maxValue + padding
+  
+  // Generate Y-axis ticks
+  const tickCount = 6
+  const tickStep = (yAxisMax - yAxisMin) / (tickCount - 1)
+  const yAxisTicks = Array.from({ length: tickCount }, (_, i) => 
+    Math.round(yAxisMin + tickStep * i)
+  )
+
+  const displayLabel = selectedTraderId ? `Trader ${selectedTraderId}` : 'Portfolio'
+  const displayInitial = selectedTraderId ? 'T' : 'P'
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value)
+  }
+
   return (
     <div className="flex flex-col gap-6 p-6 bg-[#0D0D0D] rounded-2xl">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 md:gap-2 lg:gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-medium text-white">Performance</h2>
           <div className="flex items-center gap-2 px-3 py-1 bg-[#1A1A1A] rounded-full border border-[#333]">
-            <div className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center">
-              <span className="text-[10px] font-bold text-white">T</span>
+            <div className="w-4 h-4 rounded-full bg-[#86efac] flex items-center justify-center">
+              <span className="text-[10px] font-bold text-black">{displayInitial}</span>
             </div>
-            <span className="text-sm font-medium text-white">TSLA</span>
+            <span className="text-sm font-medium text-white">{displayLabel}</span>
           </div>
         </div>
         
         <div className="flex items-center gap-4 md:gap-2 lg:gap-4">
           <div className="flex items-center bg-[#1A1A1A] rounded-lg p-1">
-            {['1D', '1M', '3M', '6M', '1Y'].map((period) => (
+            {(['1D', '1W', '1M', '3M', '1Y'] as TimeRange[]).map((period) => (
               <button
                 key={period}
+                onClick={() => setTimeRange(period)}
                 className={`px-3 md:px-2 lg:px-3 py-1 text-sm md:text-xs lg:text-sm rounded-md transition-colors ${
-                  period === '6M' 
+                  period === timeRange
                     ? 'bg-[#2A2A2A] text-white shadow-sm' 
                     : 'text-gray-400 hover:text-white'
                 }`}
@@ -78,7 +93,7 @@ export function PerformanceChart() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
-              <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="colorPerformance" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#86efac" stopOpacity={0.3}/>
                 <stop offset="95%" stopColor="#86efac" stopOpacity={0}/>
               </linearGradient>
@@ -89,21 +104,29 @@ export function PerformanceChart() {
               hide 
             />
             <YAxis 
-              domain={[250, 500]} 
+              domain={[yAxisMin, yAxisMax]} 
               orientation="left" 
               tick={{ fill: '#666' }} 
               axisLine={false}
               tickLine={false}
-              ticks={[250, 300, 350, 400, 450, 500]}
+              ticks={yAxisTicks}
+              tickFormatter={(value) => formatCurrency(value)}
             />
             <Tooltip 
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
+                  const dataPoint = payload[0].payload as PerformanceDataPoint
                   return (
-                    <div className="bg-[#1A1A1A] border border-[#333] p-2 rounded-lg shadow-xl">
+                    <div className="bg-[#1A1A1A] border border-[#333] p-3 rounded-lg shadow-xl">
                       <p className="text-white font-medium">
-                        {payload[0].value?.toFixed(2)} USD <span className="text-gray-400 text-sm ml-2">{payload[0].payload.date}</span>
+                        {formatCurrency(dataPoint.value)}
+                        {dataPoint.pnl !== undefined && (
+                          <span className={`text-sm ml-2 ${dataPoint.pnl >= 0 ? 'text-[#86efac]' : 'text-[#F87171]'}`}>
+                            {dataPoint.pnl >= 0 ? '+' : ''}{formatCurrency(dataPoint.pnl)}
+                          </span>
+                        )}
                       </p>
+                      <p className="text-gray-400 text-sm mt-1">{dataPoint.date}</p>
                     </div>
                   )
                 }
@@ -113,11 +136,11 @@ export function PerformanceChart() {
             
             <Area 
               type="monotone" 
-              dataKey="price" 
+              dataKey="value" 
               stroke="#86efac" 
               strokeWidth={2} 
               fillOpacity={1} 
-              fill="url(#colorPrice)" 
+              fill="url(#colorPerformance)" 
             />
           </AreaChart>
         </ResponsiveContainer>
